@@ -1,0 +1,16 @@
+<h1>Current Schedule Schema</h1>
+
+{% if error_msg %} <h2>{{ error_msg }}</h2> {% endif %}
+
+{% if schedule_schema %}
+<h3>{{ schedule_schema.name }}</h3>
+<ul>
+
+    {% for name, value in schedule_schema.get_fields %}
+    <li>{{name}}: {{value}}</li>
+    {% endfor %}
+
+</ul>
+{% endif %}
+
+<p><a href="/">Go Home</a></p>

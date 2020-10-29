@@ -1,9 +1,11 @@
 {% if employee_list %}
-    <ul>
-        {% for employee in employee_list %}
-            <li><a href="/employees/{{ employee.id }}/">{{ employee.name }}</a></li>
-        {% endfor %}
-    </ul>
+<ul>
+    {% for employee in employee_list %}
+    <li><a href="{% url 'scheduler:employee' employee.id %}">{{ employee.name }}</a></li>
+    {% endfor %}
+</ul>
 {% else %}
-    <p>No employees are available to view...</p>
+<p>No employees are available to view...</p>
 {% endif %}
+
+<p><a href="/">Go Home</a></p>
