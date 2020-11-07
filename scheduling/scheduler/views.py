@@ -7,6 +7,10 @@ from .make_schedule import scheduler
 
 # Create your views here.
 
+def login(request):
+    return render(request, 'scheduler/login.html', {})
+
+
 def index(request):
 
     # PersonFormSet = modelformset_factory(Person, fields='__all__')

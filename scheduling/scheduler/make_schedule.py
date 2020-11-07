@@ -1,5 +1,36 @@
 from .models import Schedule, Person, ScheduleSchema
 import re
+import operator
+
+BAD_NAME_LIST = ["id", "created", "updated", "name"]
+
+
+def sort_shifts(schedule_schema_to_sort, list_of_employees):
+    """Sorts the list of shifts by how many employees can work that job
+
+    :param schedule_schema_to_sort: The schema that you want to sort, it should just be 'sched_schema_to_use' in the below scheduler() function
+    :param list_of_employees: A list of employees to check, it should just be sorted_employees below
+    :return list_of_shift_names: Returns the sorted list of shifts names
+    """
+
+    temp_dict = {}
+    for name, value in schedule_schema_to_sort.get_fields():
+        if name not in BAD_NAME_LIST:
+            if "AM" in name:
+                index = name.index("AM")
+            elif "PM" in name:
+                index = name.index("PM")
+            job = name[index+2:]
+            shift_name = name[:index+2]
+            counter = 0
+            for employee in list_of_employees:
+                if getattr(employee, shift_name) and getattr(employee, job):
+                    counter += 1
+            if counter != 0:
+                temp_dict[name] = counter
+    temp_list = sorted(temp_dict.items(), key=operator.itemgetter(1))
+    list_of_shift_names = [tup[0] for tup in temp_list]
+    return list_of_shift_names
 
 
 def scheduler():
@@ -7,17 +38,19 @@ def scheduler():
     sorted_employees = sorted(Person.objects.all(),
                               key=Person.calculate_avail_ratio)
     sched_schema_to_use = ScheduleSchema.objects.order_by('-updated')[0]
-    bad_name_list = ["id", "created", "updated", "name"]
+
+    sorted_shifts = sort_shifts(sched_schema_to_use, sorted_employees)
 
     # Starts the scheduling section
     for employee in sorted_employees:
         # Copy employee number of shifts so as not to actually change their object's properties
         employee_shifts = employee.shifts
-        for name, value in sched_schema_to_use.get_fields():
 
-            """ Checks that it isn't the name property, the shift(value) is 
-            required and that the employee has shifts left to assign """
-            if (name not in bad_name_list) and (value == "True") and (employee_shifts > 0):
+        for name in sorted_shifts:
+
+            # Checks that it isn't the name property, the shift(value) is
+            # required and that the employee has shifts left to assign
+            if (name not in BAD_NAME_LIST) and (getattr(sched_schema_to_use, name)) and (employee_shifts > 0):
                 clean_name_of_shift = re.sub('Driver|Cashier|Bagger', '', name)
 
                 # Check if the employee is available that day
