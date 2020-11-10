@@ -1,9 +1,11 @@
 from django import forms
+from django.contrib.auth.models import User
 from .models import Person, Schedule
 from django.forms import ModelForm
 
 
 class PersonForm(ModelForm):
+
     class Meta:
         model = Person
         fields = [

@@ -33,6 +33,9 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     # Self made apps
     'scheduler.apps.SchedulerConfig',
+    'users.apps.UsersConfig',
+    # Third-party apps
+    'crispy_forms',
     # Default apps
     'django.contrib.admin',
     'django.contrib.auth',
@@ -121,3 +124,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+LOGIN_REDIRECT_URL = 'scheduler:home'
+LOGIN_URL = 'login'

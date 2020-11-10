@@ -1,6 +1,15 @@
+{% extends "scheduler/base.html" %}
+
+{% block content %}
+
 <h1>Make the schedule</h1>
 
+{% if unauthorized %}
 
+<p>{{ unauthorized }}</p>
+
+
+{% else %}
 <!-- Signal if someone has been added -->
 {% if success_msg %}<p>{{ success_msg }}</p> {% endif %}
 {% if error_msg %}<p>{{ error_msg }}</p> {% endif %}
@@ -11,5 +20,8 @@
     {{ formset }}
     <input type="submit" name="Submit">
 </form>
+{% endif %}
 
-<p><a href="/">Go Home</a></p>
+<p><a href="{% url 'scheduler:home' %}">Go Home</a></p>
+
+{% endblock %}

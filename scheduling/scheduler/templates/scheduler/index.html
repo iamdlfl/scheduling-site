@@ -1,14 +1,5 @@
-<p>You have reached the index. To see a list of employees go to the <a href="employees/">employees</a> page</p>
-<p>Click here to see the schedule <a href="/schema/">schema</a></p>
+{% extends "scheduler/base.html" %}
 
-
-<p>To add an employee fill out the form below: </p>
-
-<!-- Signal if someone has been added -->
-{% if success_msg %}<p>{{ success_msg }}</p> {% endif %}
-
-<form method="post">
-    {% csrf_token %}
-    {{ formset }}
-    <input type="submit" name="Submit">
-</form>
+{% block content %}
+<p>Please <a href="{% url 'login' %}">logon</a> ...</p>
+{% endblock %}

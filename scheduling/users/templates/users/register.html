@@ -1,0 +1,23 @@
+{% extends "scheduler/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div>
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset>
+            <legend>Join Today!</legend>
+            {{ form|crispy }}
+        </fieldset>
+        <button type="submit">Sign Up</button>
+    </form>
+    <div>
+        <small>
+            Already have an account? Login <a href="{% url 'login' %}">here</a>
+        </small>
+    </div>
+</div>
+
+{% endblock %}

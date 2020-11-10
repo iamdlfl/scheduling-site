@@ -21,7 +21,7 @@ class TimeMixin(models.Model):
 
 
 class Person(TimeMixin):
-    name = models.TextField(blank=False, unique=True)
+    name = models.OneToOneField(User, on_delete=models.CASCADE,)
     MondayAM = models.BooleanField(default=False)
     MondayPM = models.BooleanField(default=False)
     TuesdayAM = models.BooleanField(default=False)
@@ -41,7 +41,7 @@ class Person(TimeMixin):
     flex = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return self.name.username
 
     def get_fields(self):
         return [(field.name, field.value_to_string(self)) for field in self._meta.fields]
