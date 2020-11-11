@@ -11,8 +11,10 @@ from users.models import Person
 
 @login_required
 def home(request):
+    emp_names = [p.username for p in Person.objects.filter(
+        groups__name__in=['Employee'])]
 
-    if Schedule.objects.exists():
+    if (request.user.username in emp_names) and Schedule.objects.exists():
         sched = Schedule.objects.order_by('-updated')[0]
 
         if request.user.is_staff:
@@ -20,10 +22,13 @@ def home(request):
 
         return render(request, 'scheduler/home.html', {'sched': sched})
 
+    else:
+        msg = "You are not listed as an employee yet. Please contact the system administrator."
+
     if request.user.is_staff:
         return render(request, 'scheduler/home.html', {'staff': 'staff'})
 
-    return render(request, 'scheduler/home.html', {})
+    return render(request, 'scheduler/home.html', {'msg': msg})
 
 
 @login_required
@@ -43,13 +48,19 @@ def employees(request):
 @login_required
 def schedule_schema(request):
 
+    emp_names = [p.username for p in Person.objects.filter(
+        groups__name__in=['Employee'])]
+
     # Show most recent schedule schema
-    if ScheduleSchema.objects.exists():
+    if (request.user.username in emp_names) and ScheduleSchema.objects.exists():
         schedule_schema = ScheduleSchema.objects.order_by('-updated')[0]
 
         return render(request, 'scheduler/schema.html', {'schedule_schema': schedule_schema})
 
     error_msg = "There are no schemas. Sorry!"
+
+    if (request.user.username not in emp_names):
+        error_msg = "You are not listed as an employee yet. Please contact the system administrator."
 
     return render(request, 'scheduler/schema.html', {'error_msg': error_msg})
 

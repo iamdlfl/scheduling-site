@@ -9,12 +9,14 @@
 <!-- Signal if someone has been added -->
 {% if success_msg %}<p class="alert alert-success">{{ success_msg }}</p> {% endif %}
 
+{% if formset %}
 <form method="post" class="container">
     {% csrf_token %}
 
     {{ formset|crispy }}
     <input class="btn btn-primary" type="submit" name="Submit">
 </form>
+{% endif %}
 
 
 {% endblock %}
