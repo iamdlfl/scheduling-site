@@ -1,4 +1,5 @@
-from .models import Schedule, Person, ScheduleSchema
+from .models import Schedule, ScheduleSchema
+from users.models import Person
 import re
 import operator
 
@@ -60,22 +61,22 @@ def scheduler():
                         schedule_to_create, clean_name_of_shift)
 
                     # Check if employee is already assigned this job
-                    if employee.name not in old_value_of_sched:
+                    if employee.username not in old_value_of_sched:
 
                         # Check if employee can do job, if job is in name, and if job is not in old value (i.e. already assigned)
                         if employee.Driver and 'Driver' in name and 'Driver' not in old_value_of_sched:
                             value_to_insert = old_value_of_sched + \
-                                f"| {employee.name} as Driver |"
+                                f"| {employee.username} as Driver |"
                             employee_shifts -= 1
 
                         elif employee.Cashier and 'Cashier' in name and 'Cashier' not in old_value_of_sched:
                             value_to_insert = old_value_of_sched + \
-                                f"| {employee.name} as Cashier |"
+                                f"| {employee.username} as Cashier |"
                             employee_shifts -= 1
 
                         elif employee.Bagger and 'Bagger' in name and 'Bagger' not in old_value_of_sched:
                             value_to_insert = old_value_of_sched + \
-                                f"| {employee.name} as Bagger |"
+                                f"| {employee.username} as Bagger |"
                             employee_shifts -= 1
 
                         else:

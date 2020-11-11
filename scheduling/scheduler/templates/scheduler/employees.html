@@ -2,16 +2,27 @@
 
 {% block content %}
 
+<h1>A list of employees: </h1>
+
 {% if employee_list %}
-<ul>
-    {% for employee in employee_list %}
-    <li><a href="{% url 'scheduler:employee' employee.id %}">{{ employee.name }}</a></li>
-    {% endfor %}
-</ul>
+<div class="row">
+    <div class="col-sm-3 ml-3">
+
+        <ul class="list-group">
+            {% for employee in employee_list %}
+            <li class="list-group-item">{{ employee.username }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% elif unauthorized %}
+
+<p>{{ unauthorized }}</p>
+
 {% else %}
+
 <p>No employees are available to view...</p>
 {% endif %}
 
-<p><a href="{% url 'scheduler:home' %}">Go Home</a></p>
 
 {% endblock %}

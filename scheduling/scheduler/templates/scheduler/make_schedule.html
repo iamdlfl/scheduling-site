@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h1>Make the schedule</h1>
+<h1 class="mb-3">Make the schedule</h1>
 
 {% if unauthorized %}
 
@@ -11,17 +11,21 @@
 
 {% else %}
 <!-- Signal if someone has been added -->
-{% if success_msg %}<p>{{ success_msg }}</p> {% endif %}
-{% if error_msg %}<p>{{ error_msg }}</p> {% endif %}
+{% if success_msg %}<p class="alert alert-success">{{ success_msg }}</p> {% endif %}
+{% if error_msg %}<p class="alert alert-danger">{{ error_msg }}</p> {% endif %}
 
-<form method="post">
+<form method="post" class="container">
     {% csrf_token %}
     <p>Make the name for the schedule and submit</p>
-    {{ formset }}
-    <input type="submit" name="Submit">
+    <div class="form-group row">
+        <label class="col-form-label col-sm-3" for="name">Name of schedule here</label>
+        <div class="col-sm-9">
+            {{ formset.name }}
+        </div>
+    </div>
+    <input class="btn btn-primary mt-3" type="submit" name="Submit">
 </form>
 {% endif %}
 
-<p><a href="{% url 'scheduler:home' %}">Go Home</a></p>
 
 {% endblock %}

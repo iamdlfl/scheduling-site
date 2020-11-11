@@ -1,63 +1,41 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Person, ScheduleSchema, Schedule
+from .models import ScheduleSchema, Schedule
 from django.forms import modelformset_factory
 from .forms import PersonForm, ScheduleForm
 from .make_schedule import scheduler
 from django.contrib.auth.decorators import login_required
-
+from users.models import Person
 
 # Create your views here.
-
-def index(request):
-    return render(request, 'scheduler/index.html', {})
 
 
 @login_required
 def home(request):
 
-    # PersonFormSet = modelformset_factory(Person, fields='__all__')
-    if request.method == 'POST':
+    if Schedule.objects.exists():
+        sched = Schedule.objects.order_by('-updated')[0]
 
-        # Set the form equal to the filled out PersonForm
-        formset = PersonForm(request.POST)
+        if request.user.is_staff:
+            return render(request, 'scheduler/home.html', {'staff': 'staff', 'sched': sched})
 
-        if formset.is_valid():
+        return render(request, 'scheduler/home.html', {'sched': sched})
 
-            formset.save()
+    if request.user.is_staff:
+        return render(request, 'scheduler/home.html', {'staff': 'staff'})
 
-            # Set success message and reset the form to be empty and reload page
-            success_msg = 'Employee successfully added'
-            formset = PersonForm()
-
-            if request.user.is_superuser:
-                return render(request, 'scheduler/home.html', {'success_msg': success_msg, 'formset': formset, 'super': 'super'})
-
-            return render(request, 'scheduler/home.html', {'success_msg': success_msg, 'formset': formset})
-    else:
-
-        # Set the form to be empty upon first visit
-        formset = PersonForm()
-
-    if request.user.is_superuser:
-        return render(request, 'scheduler/home.html', {'formset': formset, 'super': 'super'})
-
-    return render(request, 'scheduler/home.html', {'formset': formset})
-
-
-@login_required
-def person(request, employee_id):
-
-    # Show all the details of the person
-    person = get_object_or_404(Person, pk=employee_id)
-
-    return render(request, 'scheduler/employee.html', {'person': person})
+    return render(request, 'scheduler/home.html', {})
 
 
 @login_required
 def employees(request):
 
+    if not request.user.is_staff:
+
+        return render(request, 'scheduler/employees.html', {'unauthorized': "You are not authorized to use this page."})
+
     # Show employees in reverse order of number of shifts
-    employee_list = Person.objects.order_by('-shifts')
+    employee_list = Person.objects.filter(
+        groups__name__in=['Employee']).order_by('-shifts')
 
     return render(request, 'scheduler/employees.html', {'employee_list': employee_list})
 
@@ -79,7 +57,7 @@ def schedule_schema(request):
 @login_required
 def make_schedule(request):
 
-    if not request.user.is_superuser:
+    if not request.user.is_staff:
 
         return render(request, 'scheduler/make_schedule.html', {'unauthorized': "You are not authorized to use this page."})
 
@@ -110,3 +88,36 @@ def make_schedule(request):
             formset = ScheduleForm()
 
         return render(request, 'scheduler/make_schedule.html', {'formset': formset})
+
+
+@login_required
+def change_avail(request):
+
+    instance = get_object_or_404(Person, username=request.user)
+
+    # PersonFormSet = modelformset_factory(Person, fields='__all__')
+    if request.method == 'POST':
+
+        # Set the form equal to the filled out PersonForm
+        formset = PersonForm(request.POST, instance=instance)
+
+        if formset.is_valid():
+
+            print(request.user)
+            formset.username = request.user
+            formset.save()
+
+            # Set success message and reset the form to be empty and reload page
+            success_msg = 'Employee successfully changed'
+            formset = PersonForm(instance=instance)
+
+            if request.user.is_staff:
+                return render(request, 'scheduler/change_avail.html', {'success_msg': success_msg, 'formset': formset, 'staff': 'staff'})
+
+            return render(request, 'scheduler/change_avail.html', {'success_msg': success_msg, 'formset': formset})
+    else:
+
+        # Set the form to be normal upon first visit
+        formset = PersonForm(instance=instance)
+
+    return render(request, 'scheduler/change_avail.html', {'formset': formset})
