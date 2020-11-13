@@ -14,7 +14,7 @@ def home(request):
     emp_names = [p.username for p in Person.objects.filter(
         groups__name__in=['Employee'])]
 
-    if (request.user.username in emp_names) and Schedule.objects.exists():
+    if ((request.user.username in emp_names) or request.user.is_staff) and Schedule.objects.exists():
         sched = Schedule.objects.order_by('-updated')[0]
 
         if request.user.is_staff:
@@ -52,7 +52,7 @@ def schedule_schema(request):
         groups__name__in=['Employee'])]
 
     # Show most recent schedule schema
-    if (request.user.username in emp_names) and ScheduleSchema.objects.exists():
+    if ((request.user.username in emp_names) or request.user.is_staff) and ScheduleSchema.objects.exists():
         schedule_schema = ScheduleSchema.objects.order_by('-updated')[0]
 
         return render(request, 'scheduler/schema.html', {'schedule_schema': schedule_schema})
@@ -104,31 +104,35 @@ def make_schedule(request):
 @login_required
 def change_avail(request):
 
-    instance = get_object_or_404(Person, username=request.user)
+    if Person.objects.filter(username=request.user).exists():
 
-    # PersonFormSet = modelformset_factory(Person, fields='__all__')
-    if request.method == 'POST':
+        instance = get_object_or_404(Person, username=request.user)
 
-        # Set the form equal to the filled out PersonForm
-        formset = PersonForm(request.POST, instance=instance)
+        # PersonFormSet = modelformset_factory(Person, fields='__all__')
+        if request.method == 'POST':
 
-        if formset.is_valid():
+            # Set the form equal to the filled out PersonForm
+            formset = PersonForm(request.POST, instance=instance)
 
-            print(request.user)
-            formset.username = request.user
-            formset.save()
+            if formset.is_valid():
 
-            # Set success message and reset the form to be empty and reload page
-            success_msg = 'Employee successfully changed'
+                print(request.user)
+                formset.username = request.user
+                formset.save()
+
+                # Set success message and reset the form to be empty and reload page
+                success_msg = 'Employee successfully changed'
+                formset = PersonForm(instance=instance)
+
+                if request.user.is_staff:
+                    return render(request, 'scheduler/change_avail.html', {'success_msg': success_msg, 'formset': formset, 'staff': 'staff'})
+
+                return render(request, 'scheduler/change_avail.html', {'success_msg': success_msg, 'formset': formset})
+        else:
+
+            # Set the form to be normal upon first visit
             formset = PersonForm(instance=instance)
 
-            if request.user.is_staff:
-                return render(request, 'scheduler/change_avail.html', {'success_msg': success_msg, 'formset': formset, 'staff': 'staff'})
+        return render(request, 'scheduler/change_avail.html', {'formset': formset})
 
-            return render(request, 'scheduler/change_avail.html', {'success_msg': success_msg, 'formset': formset})
-    else:
-
-        # Set the form to be normal upon first visit
-        formset = PersonForm(instance=instance)
-
-    return render(request, 'scheduler/change_avail.html', {'formset': formset})
+    return render(request, 'scheduler/change_avail.html', {})

@@ -16,6 +16,16 @@
     {{ formset|crispy }}
     <input class="btn btn-primary" type="submit" name="Submit">
 </form>
+{% else %}
+<div class="row">
+    <div class="col-sm-8">
+
+        <h3 class="mt-5">You don't have a scheduling profile. Please contact the system administrator if you are
+            supposed
+            to.
+        </h3>
+    </div>
+</div>
 {% endif %}
 
 
