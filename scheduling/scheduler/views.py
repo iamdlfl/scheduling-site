@@ -86,8 +86,14 @@ def make_schedule(request):
 
             if formset.is_valid():
 
-                formset.save()
-                scheduler()
+                if ('repeat' in request.__dict__['_post']):
+                    sched = Schedule.objects.order_by('-updated')[0]
+                    sched.name = formset.cleaned_data.get('name')
+                    sched.pk = None
+                    sched.save()
+                else:
+                    formset.save()
+                    scheduler()
 
                 # Set success msg and reset form
                 success_msg = "Schedule successfully made"
