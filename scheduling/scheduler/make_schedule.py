@@ -59,24 +59,37 @@ def scheduler():
                     # Get the old value so it isn't just overwritten
                     old_value_of_sched = getattr(
                         schedule_to_create, clean_name_of_shift)
+                    
 
                     # Check if employee is already assigned this job
                     if employee.username not in old_value_of_sched:
 
                         # Check if employee can do job, if job is in name, and if job is not in old value (i.e. already assigned)
                         if employee.Driver and 'Driver' in name and 'Driver' not in old_value_of_sched:
-                            value_to_insert = old_value_of_sched + \
-                                f"| {employee.username} as Driver |"
+                            if (old_value_of_sched == ''):
+                                value_to_insert = old_value_of_sched + \
+                                    f" {employee.username} as Driver "
+                            else:
+                                value_to_insert = old_value_of_sched + \
+                                    f"| {employee.username} as Driver "
                             employee_shifts -= 1
 
                         elif employee.Cashier and 'Cashier' in name and 'Cashier' not in old_value_of_sched:
-                            value_to_insert = old_value_of_sched + \
-                                f"| {employee.username} as Cashier |"
+                            if (old_value_of_sched == ''):
+                                value_to_insert = old_value_of_sched + \
+                                    f" {employee.username} as Cashier "
+                            else:
+                                value_to_insert = old_value_of_sched + \
+                                    f"| {employee.username} as Cashier "
                             employee_shifts -= 1
 
                         elif employee.Bagger and 'Bagger' in name and 'Bagger' not in old_value_of_sched:
-                            value_to_insert = old_value_of_sched + \
-                                f"| {employee.username} as Bagger |"
+                            if (old_value_of_sched == ''):
+                                value_to_insert = old_value_of_sched + \
+                                    f" {employee.username} as Bagger "
+                            else:
+                                value_to_insert = old_value_of_sched + \
+                                    f"| {employee.username} as Bagger "
                             employee_shifts -= 1
 
                         else:
