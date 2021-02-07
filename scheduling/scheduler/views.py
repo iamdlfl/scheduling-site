@@ -14,7 +14,8 @@ def home(request):
     emp_names = [p.username for p in Person.objects.filter(
         groups__name__in=['Employee'])]
 
-    if ((request.user.username in emp_names) or request.user.is_staff) and Schedule.objects.exists():
+    if Schedule.objects.exists():
+        # Get the most recent schedule
         sched = Schedule.objects.order_by('-updated')[0]
 
         if request.user.is_staff:
@@ -22,11 +23,10 @@ def home(request):
 
         return render(request, 'scheduler/home.html', {'sched': sched})
 
-    else:
-        msg = "You are not listed as an employee yet. Please contact the system administrator."
-
     if request.user.is_staff:
         return render(request, 'scheduler/home.html', {'staff': 'staff'})
+
+    msg = "There doesn't appear to be a schedule ready. Contact Nelson!"
 
     return render(request, 'scheduler/home.html', {'msg': msg})
 
