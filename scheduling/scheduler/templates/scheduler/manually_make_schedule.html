@@ -4,17 +4,17 @@
 
 {% block content %}
 
-<h1>{{msg}}</h1>
-<!-- <h1 class="mb-3">Make the schedule</h1>
+<h1 class="mb-3">Make the schedule - NOT FUNCTIONAL</h1>
 
 {% if unauthorized %}
 
     <p>{{ unauthorized }}</p>
 
 
-{% else %} -->
+{% else %}
+
     <!-- Signal if someone has been added -->
-    <!-- {% if success_msg %}<p class="alert alert-success">{{ success_msg }}</p> {% endif %}
+    {% if success_msg %}<p class="alert alert-success">{{ success_msg }}</p> {% endif %}
     {% if error_msg %}<p class="alert alert-danger">{{ error_msg }}</p> {% endif %}
     {% if schedule %}
     <form method="post" class="container">
@@ -46,7 +46,7 @@
             {% endif %}
         </div>
         {% endfor %}
-        <input class="btn btn-primary mt-3" type="submit" name="Submit">
+        <!-- <input class="btn btn-primary mt-3" type="submit" name="Submit"> -->
     </form>
     {% else %}
     <form method="post" class="container">
@@ -78,9 +78,9 @@
             {% endif %}
         </div>
         {% endfor %}
-        <input class="btn btn-primary mt-3" type="submit" name="Submit">
+        <!--<input class="btn btn-primary mt-3" type="submit" name="Submit"> -->
     </form>
     {% endif %}
-{% endif %} --> 
+{% endif %} 
 
 {% endblock %}

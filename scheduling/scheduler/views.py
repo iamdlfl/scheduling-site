@@ -64,7 +64,6 @@ def schedule_schema(request):
 @login_required
 def manually_make_schedule(request):
 
-    return render(request, 'scheduler/manually_make_schedule.html', {'msg': 'COMING SOON'})
     if not request.user.is_staff:
 
         return render(request, 'scheduler/manually_make_schedule.html', {'unauthorized': "You are not authorized to use this page."})
