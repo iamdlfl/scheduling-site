@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import ScheduleSchema, Schedule
 from django.forms import modelformset_factory
-from .forms import PersonForm, ScheduleForm
+from .forms import PersonForm, ScheduleForm, ManualScheduleForm
 from .make_schedule import scheduler
 from django.contrib.auth.decorators import login_required
 from users.models import Person
@@ -48,21 +48,51 @@ def employees(request):
 @login_required
 def schedule_schema(request):
 
-    emp_names = [p.username for p in Person.objects.filter(
-        groups__name__in=['Employee'])]
+    # emp_names = [p.username for p in Person.objects.filter(
+    #     groups__name__in=['Employee'])]
 
     # Show most recent schedule schema
-    if ((request.user.username in emp_names) or request.user.is_staff) and ScheduleSchema.objects.exists():
+    if ScheduleSchema.objects.exists():
         schedule_schema = ScheduleSchema.objects.order_by('-updated')[0]
 
         return render(request, 'scheduler/schema.html', {'schedule_schema': schedule_schema})
 
     error_msg = "There are no schemas. Sorry!"
 
-    if (request.user.username not in emp_names):
-        error_msg = "You are not listed as an employee yet. Please contact the system administrator."
-
     return render(request, 'scheduler/schema.html', {'error_msg': error_msg})
+
+@login_required
+def manually_make_schedule(request):
+
+    return render(request, 'scheduler/manually_make_schedule.html', {'msg': 'COMING SOON'})
+    if not request.user.is_staff:
+
+        return render(request, 'scheduler/manually_make_schedule.html', {'unauthorized': "You are not authorized to use this page."})
+
+    else:
+        employee_list = Person.objects.filter(
+            groups__name__in=['Employee']).order_by('username')
+        # To use in the bootstrap columns
+        columns = int(12/(len(employee_list) + 1))
+
+        if not ScheduleSchema.objects.exists():
+            error_msg = "There are no schemas to use! Make a schema first."
+            return render(request, 'scheduler/manually_make_schedule.html', {'error_msg': error_msg, 'employees': employee_list})
+            
+        fields = Schedule.get_form_fields(Schedule)
+
+        if request.method == 'POST':
+            print(request.body)
+            success_msg = "Schedule successfully made"
+            schedule = Schedule.objects.order_by('-updated')[0]
+            return render(request, 'scheduler/manually_make_schedule.html', {'success_msg': success_msg, 'fields': fields, 'employees': employee_list, 'columns': columns, 'schedule': schedule})
+
+        else:
+            if Schedule.objects.exists():
+                # Eventually use this to populate the fields with the last schedule to make it easier.
+                schedule = Schedule.objects.order_by('-updated')[0]
+                return render(request, 'scheduler/manually_make_schedule.html', {'fields': fields, 'employees': employee_list, 'columns': columns, 'schedule': schedule})
+            return render(request, 'scheduler/manually_make_schedule.html', {'fields': fields, 'employees': employee_list, 'columns': columns})
 
 
 @login_required
@@ -86,6 +116,7 @@ def make_schedule(request):
 
             if formset.is_valid():
 
+                # Set schedule equal to last schedule
                 if ('repeat' in request.__dict__['_post']):
                     sched = Schedule.objects.order_by('-updated')[0]
                     sched.name = formset.cleaned_data.get('name')
@@ -105,6 +136,24 @@ def make_schedule(request):
             formset = ScheduleForm()
 
         return render(request, 'scheduler/make_schedule.html', {'formset': formset})
+
+
+@login_required
+def my_schedule(request):
+    if Person.objects.filter(username=request.user).exists() and Schedule.objects.exists():
+        # Get the most recent schedule and the Person
+        sched = Schedule.objects.order_by('-updated')[0]
+        instance = get_object_or_404(Person, username=request.user)
+        info = []
+        for name, value in sched.get_fields():
+            for v in value:
+                if instance.username in v:
+                    info.append((name, v.strip().split(' ')[2]))
+
+
+        return render(request, 'scheduler/my_schedule.html', {'info': info, 'user': instance})
+
+    return render(request, 'scheduler/my_schedule.html')
 
 
 @login_required

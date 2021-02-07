@@ -1,0 +1,25 @@
+{% extends "scheduler/base.html" %}
+
+{% block content %}
+
+{% if info %}
+    <h1>Schedule for {{ user.username }}</h1>
+    {% for shift, position in info %}
+        <div class="row mb-2 border border-dark">
+            <div class="col-sm-6 border bg-light">{{shift}}</div>
+            <div class="col-sm-6 border">{{position}}</div>
+        </div>
+    {% endfor %}
+{% else %}
+<div class="row">
+    <div class="col-sm-8">
+
+        <h3 class="mt-5">You don't have a schedule. Please contact the system administrator if you are
+            supposed
+            to.
+        </h3>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

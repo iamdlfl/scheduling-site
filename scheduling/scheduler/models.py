@@ -55,6 +55,9 @@ class ScheduleSchema(TimeMixin):
     def get_fields(self):
         return [(field.name, field.value_to_string(self)) for field in self._meta.fields]
 
+    def get_form_fields(self):
+        return [(field.name, field.value_to_string(self)) for field in self._meta.fields[4:]]
+
     def __str__(self):
         return self.name
 
@@ -75,7 +78,24 @@ class Schedule(TimeMixin):
     SaturdayPM = models.TextField(blank=True)
 
     def get_fields(self):
-        return [(field.name, field.value_to_string(self)) for field in self._meta.fields]
+        fields_to_return = []
+        for field in self._meta.fields:
+            v = field.value_to_string(self)
+            if ('AM' in field.name or 'PM' in field.name) and 'Driver' not in v:
+                return [('ERROR', ['There appears to be an error with the schedule. Make sure someone is scheduled as a driver for every shift.'])]
+            elif '|' in v:
+                new_v = v.split('|')
+                fields_to_return.append((field.name, new_v))
+            else:
+                fields_to_return.append((field.name, [v]))
+        return fields_to_return
+
+    def get_form_fields(self):
+        fields_to_return = []
+        for field in self._meta.fields[3:]:
+            fields_to_return.append(field.name)
+        return fields_to_return
+
 
     def __str__(self):
         return self.name

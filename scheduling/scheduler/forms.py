@@ -45,3 +45,29 @@ class ScheduleForm(ModelForm):
         fields = [
             'name',
         ]
+
+class ManualScheduleForm(ModelForm):
+    name = forms.CharField(widget=forms.TextInput(
+        attrs={
+            'class': 'form-control',
+            'name': 'name',
+            'id': 'name'
+        }
+    ))
+    class Meta:
+        model = Schedule
+        fields = [
+            "name",
+            "MondayAM",
+            "MondayPM",
+            "TuesdayAM",
+            'TuesdayPM',
+            'WednesdayAM',
+            'WednesdayPM',
+            'ThursdayAM',
+            'ThursdayPM',
+            'FridayAM',
+            'FridayPM',
+            'SaturdayAM',
+            'SaturdayPM'
+        ]

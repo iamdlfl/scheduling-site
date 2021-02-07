@@ -70,8 +70,7 @@ def scheduler():
                                 value_to_insert = old_value_of_sched + \
                                     f" {employee.username} as Driver "
                             else:
-                                value_to_insert = old_value_of_sched + \
-                                    f"| {employee.username} as Driver "
+                                value_to_insert = f"{employee.username} as Driver |" + old_value_of_sched
                             employee_shifts -= 1
 
                         elif employee.Cashier and 'Cashier' in name and 'Cashier' not in old_value_of_sched:

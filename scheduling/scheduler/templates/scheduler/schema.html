@@ -8,13 +8,21 @@
 
 {% if schedule_schema %}
 <div class="container">
-    <h3>{{ schedule_schema.name }}</h3>
+    <h2>{{ schedule_schema.name }}</h2>
 
     {% for name, value in schedule_schema.get_fields %}
-    <div class="row mb-1 ml-2">
-        <div class="col-sm-3 font-weight-light">{{ name }}</div>
-        <div class="col-sm-9">{{ value }}</div>
-    </div>
+        {% if name == 'created' or name == 'updated' or name == 'id' or name == 'name' %}
+        {% else %}
+        <div class="row mb-1 ml-2 border">
+            <div class="col-sm-3 font-weight-light bg-light">{{ name }}</div>
+            <div class="col-sm-3">
+                {% if value == "True"%}
+                Required
+                {% else %}
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
     {% endfor %}
 
 </div>

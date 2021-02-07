@@ -1,0 +1,86 @@
+{% extends "scheduler/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<h1>{{msg}}</h1>
+<!-- <h1 class="mb-3">Make the schedule</h1>
+
+{% if unauthorized %}
+
+    <p>{{ unauthorized }}</p>
+
+
+{% else %} -->
+    <!-- Signal if someone has been added -->
+    <!-- {% if success_msg %}<p class="alert alert-success">{{ success_msg }}</p> {% endif %}
+    {% if error_msg %}<p class="alert alert-danger">{{ error_msg }}</p> {% endif %}
+    {% if schedule %}
+    <form method="post" class="container">
+        {% csrf_token %}
+        {% for field in fields %}
+        <div class="form-row border border-dark mb-1">
+            <div class="col-sm-{{columns}}">{{field|capfirst}}</div>
+            {% if field == 'name' %}
+            {% for employee in employees %}
+            <div class="col-sm-{{columns}} border"> {{employee.username|capfirst}}</div>
+            {% endfor %}
+            {% else %}
+            {% for employee in employees %}
+            <div class="col-sm-{{columns}} border">
+                <select name="{{field}}{{employee.username}}" id="{{field}}{{employee.username}}">
+                    <option value="None">None</option>
+                    {% if employee.Driver %}
+                    <option value="Driver" >Driver</option>
+                    {% endif %}
+                    {% if employee.Cashier %}
+                    <option value="Cashier">Cashier</option>
+                    {% endif %}
+                    {% if employee.Bagger %}
+                    <option value="Bagger">Bagger</option>
+                    {% endif %}
+                </select>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+        {% endfor %}
+        <input class="btn btn-primary mt-3" type="submit" name="Submit">
+    </form>
+    {% else %}
+    <form method="post" class="container">
+        {% csrf_token %}
+        {% for field in fields %}
+        <div class="form-row border border-dark mb-1">
+        <div class="col-sm-{{columns}}">{{field|capfirst}}</div>
+            {% if field == 'name' %}
+                {% for employee in employees %}
+                <div class="col-sm-{{columns}} border"> {{employee.username|capfirst}}</div>
+                {% endfor %}
+            {% else %}
+                {% for employee in employees %}
+                <div class="col-sm-{{columns}} border">
+                <select name="{{field}}{{employee.username}}" id="{{field}}{{employee.username}}">
+                    <option value="None" selected>None</option>
+                    {% if employee.Driver %}
+                    <option value="Driver">Driver</option>
+                    {% endif %}
+                    {% if employee.Cashier %}
+                    <option value="Cashier">Cashier</option>
+                    {% endif %}
+                    {% if employee.Bagger %}
+                    <option value="Bagger">Bagger</option>
+                    {% endif %}
+                </select>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        {% endfor %}
+        <input class="btn btn-primary mt-3" type="submit" name="Submit">
+    </form>
+    {% endif %}
+{% endif %} --> 
+
+{% endblock %}

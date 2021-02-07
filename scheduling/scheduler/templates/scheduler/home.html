@@ -6,18 +6,34 @@
 
 <h1 class="my-3">Hi, {{ user.username }}</h1>
 
-<h3 class="mb-5">Here is the current schedule</h3>
+<h2 class="mb-5">Here is the current schedule</h2>
 {% if msg %} <p class="alert alert-danger">{{ msg }}</p>{% endif %}
 
 {% if sched %}
 <div class="container">
 
     {% for name, value in sched.get_fields %}
-    <div class="row mb-2">
-        <div class="col-sm-2"><span class="font-weight-bold text-uppercase">{{name}}</span> </div>
-
-        <div class="col-sm-10">{{value}}</div>
-    </div>
+        {% if name == 'created' or name == 'updated' or name == 'id' %}
+        {% elif value|length_is:"3" %}
+            <div class="row mb-2 border border-dark">
+                <div class="col-sm-3 border bg-light"><span class="font-weight-bold text-uppercase">{{name}}</span> </div>
+                <div class="col-sm-3">{{value.0}}</div>
+                <div class="col-sm-3 border bg-light">{{value.1}}</div>
+                <div class="col-sm-3">{{value.2}}</div>
+            </div>
+        {% elif value|length_is:"2" %}
+            <div class="row mb-2 border border-dark">
+                <div class="col-sm-3 border bg-light"><span class="font-weight-bold text-uppercase">{{name}}</span> </div>
+                <div class="col-sm-3">{{value.0}}</div>
+                <div class="col-sm-3 border bg-light">{{value.1}}</div>
+            </div>
+        {% else %}
+            <div class="row mb-2 border border-dark">
+                <div class="col-sm-3 border bg-light"><span class="font-weight-bold text-uppercase">{{name}}</span> </div>
+                <div class="col-sm-3">{{value.0}}</div>
+                <div class="col-sm-3 bg-light"></div>
+            </div>
+        {% endif %}
     {% endfor %}
 </div>
 {% endif %}

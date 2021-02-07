@@ -65,9 +65,15 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'scheduler:change' %}">Change Profile</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'scheduler:my_schedule' %}">Check YOUR schedule</a>
+                </li>
                 {% if user.is_staff %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'scheduler:make_schedule' %}">Make Schedule</a>
+                    <a class="nav-link" href="{% url 'scheduler:make_schedule' %}">Auto-make Schedule</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'scheduler:manually_make_schedule' %}">Set Schedule Manually</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'scheduler:employees' %}">Employees</a>
