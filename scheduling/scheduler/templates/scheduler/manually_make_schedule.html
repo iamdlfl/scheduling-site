@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<h1 class="mb-3">Make the schedule - NOT FUNCTIONAL</h1>
+<h1 class="mb-3">Make the schedule</h1>
 
 {% if unauthorized %}
 
@@ -19,26 +19,70 @@
     {% if schedule %}
     <form method="post" class="container">
         {% csrf_token %}
+        <div class="form-row m-2">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" id="name" class="form-control" name="name" required>
+        </div>
         {% for field in fields %}
         <div class="form-row border border-dark mb-1">
+            <!-- This field being appearing as "name" is a happy coincidence - it actually is the field 'name' for the schedule object 
+            See where "fields" is defined in manually_make_schedule view function-->
             <div class="col-sm-{{columns}}">{{field|capfirst}}</div>
             {% if field == 'name' %}
             {% for employee in employees %}
-            <div class="col-sm-{{columns}} border"> {{employee.username|capfirst}}</div>
+            <div class="col-sm-{{columns}} border {% cycle 'bg-light' '' %}"> {{employee.username|capfirst}}</div>
             {% endfor %}
             {% else %}
             {% for employee in employees %}
+            <!-- To auto fill I have to do this garbage... DM me if you have a better idea (I know this one isn't great). 
+                Currently only real problem is there are multiple 'options' popping up bc of for loops-->
+                <!-- Also I'm hard coding the below in because it was making a checkerboard when I tried to cycle it and IDK why -->
+            {% if employee.username == "mark" or employee.username == "rene" %}
             <div class="col-sm-{{columns}} border">
-                <select name="{{field}}{{employee.username}}" id="{{field}}{{employee.username}}">
+            {% else %}
+            <div class="col-sm-{{columns}} border bg-light">
+            {% endif %}
+                <label for="{{field}}{{employee.username}}" class="text-muted font-weight-light m-auto">{{field|slice:":2"}}{{field|slice:"-2:"}}</label>
+                <select name="{{field}}" id="{{field}}{{employee.username}}">
                     <option value="None">None</option>
                     {% if employee.Driver %}
-                    <option value="Driver" >Driver</option>
+                        {% for f, v in schedule.get_fields %}
+                        {% if f in field %}
+                        {% for string in v %}
+                        {% if "Driver" in string and employee.username in string %}
+                        <option value="{{employee.username}} as Driver" selected>Driver</option>
+                        {% else %}
+                        <option value="{{employee.username}} as Driver">Driver</option>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                        {% endfor %}
                     {% endif %}
                     {% if employee.Cashier %}
-                    <option value="Cashier">Cashier</option>
+                        {% for f, v in schedule.get_fields %}
+                        {% if f in field %}
+                        {% for string in v %}
+                        {% if "Cashier" in string and employee.username in string %}
+                        <option value="{{employee.username}} as Cashier" selected>Cashier</option>
+                        {% else %}
+                        <option value="{{employee.username}} as Cashier">Cashier</option>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                        {% endfor %}
                     {% endif %}
                     {% if employee.Bagger %}
-                    <option value="Bagger">Bagger</option>
+                        {% for f, v in schedule.get_fields %}
+                        {% if f in field %}
+                        {% for string in v %}
+                        {% if "Bagger" in string and employee.username in string %}
+                        <option value="{{employee.username}} as Bagger" selected>Bagger</option>
+                        {% else %}
+                        <option value="{{employee.username}} as Bagger">Bagger</option>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                        {% endfor %}
                     {% endif %}
                 </select>
             </div>
@@ -46,7 +90,7 @@
             {% endif %}
         </div>
         {% endfor %}
-        <!-- <input class="btn btn-primary mt-3" type="submit" name="Submit"> -->
+        <input class="btn btn-primary mt-3" type="submit" name="Submit">
     </form>
     {% else %}
     <form method="post" class="container">
@@ -61,16 +105,16 @@
             {% else %}
                 {% for employee in employees %}
                 <div class="col-sm-{{columns}} border">
-                <select name="{{field}}{{employee.username}}" id="{{field}}{{employee.username}}">
+                <select name="{{field}}" id="{{field}}{{employee.username}}">
                     <option value="None" selected>None</option>
                     {% if employee.Driver %}
-                    <option value="Driver">Driver</option>
+                    <option value="{{employee.username}} as Driver">Driver</option>
                     {% endif %}
                     {% if employee.Cashier %}
-                    <option value="Cashier">Cashier</option>
+                    <option value="{{employee.username}} as Cashier">Cashier</option>
                     {% endif %}
                     {% if employee.Bagger %}
-                    <option value="Bagger">Bagger</option>
+                    <option value="{{employee.username}} as Bagger">Bagger</option>
                     {% endif %}
                 </select>
                 </div>
@@ -78,7 +122,7 @@
             {% endif %}
         </div>
         {% endfor %}
-        <!--<input class="btn btn-primary mt-3" type="submit" name="Submit"> -->
+        <input class="btn btn-primary mt-3" type="submit" name="Submit">
     </form>
     {% endif %}
 {% endif %} 

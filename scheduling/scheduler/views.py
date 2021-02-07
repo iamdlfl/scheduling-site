@@ -5,6 +5,7 @@ from .forms import PersonForm, ScheduleForm, ManualScheduleForm
 from .make_schedule import scheduler
 from django.contrib.auth.decorators import login_required
 from users.models import Person
+from .utils import sort_positions
 
 # Create your views here.
 
@@ -81,7 +82,37 @@ def manually_make_schedule(request):
         fields = Schedule.get_form_fields(Schedule)
 
         if request.method == 'POST':
-            print(request.body)
+            # Get the form data
+            data = dict(request.__dict__['_post'])
+            new_data = {}
+            for k, v in data.items():
+                # Clean up form data and sort it
+                while 'None' in v:
+                    v.remove('None')
+                if len(v) > 1:
+                    print(v)
+                    v = sorted(v, reverse=True, key=sort_positions)
+                new_data[k]=v
+            # Create schedule
+            new_schedule = Schedule(
+                name=new_data['name'][0],
+                MondayAM='|'.join(new_data['MondayAM']),
+                MondayPM='|'.join(new_data['MondayPM']),
+                TuesdayAM='|'.join(new_data['TuesdayAM']),
+                TuesdayPM='|'.join(new_data['TuesdayPM']),
+                WednesdayAM='|'.join(new_data['WednesdayAM']),
+                WednesdayPM='|'.join(new_data['WednesdayPM']),
+                ThursdayAM='|'.join(new_data['ThursdayAM']),
+                ThursdayPM='|'.join(new_data['ThursdayPM']),
+                FridayAM='|'.join(new_data['FridayAM']),
+                FridayPM='|'.join(new_data['FridayPM']),
+                SaturdayAM='|'.join(new_data['SaturdayAM']),
+                SaturdayPM='|'.join(new_data['SaturdayPM']),
+            )
+
+            # Need to do error checking here!!
+            
+            new_schedule.save()
             success_msg = "Schedule successfully made"
             schedule = Schedule.objects.order_by('-updated')[0]
             return render(request, 'scheduler/manually_make_schedule.html', {'success_msg': success_msg, 'fields': fields, 'employees': employee_list, 'columns': columns, 'schedule': schedule})
@@ -116,11 +147,16 @@ def make_schedule(request):
             if formset.is_valid():
 
                 # Set schedule equal to last schedule
-                if ('repeat' in request.__dict__['_post']):
+                if ('repeat' in request.__dict__['_post']) and Schedule.objects.exists():
                     sched = Schedule.objects.order_by('-updated')[0]
                     sched.name = formset.cleaned_data.get('name')
                     sched.pk = None
                     sched.save()
+                elif ('repeat' in request.__dict__['_post']) and not Schedule.objects.exists():
+                    formset = ScheduleForm()
+                    error_msg = "There is no past schedule to repeat. Create a new schedule without selecting that box."
+                    return render(request, 'scheduler/make_schedule.html', {'error_msg': error_msg, 'formset': formset})
+
                 else:
                     formset.save()
                     scheduler()
