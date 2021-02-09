@@ -90,7 +90,6 @@ def manually_make_schedule(request):
                 while 'None' in v:
                     v.remove('None')
                 if len(v) > 1:
-                    print(v)
                     v = sorted(v, reverse=True, key=sort_positions)
                 new_data[k]=v
             # Create schedule
@@ -111,9 +110,15 @@ def manually_make_schedule(request):
             )
 
             # Need to do error checking here!!
-            
+            valid, msg, field_name = new_schedule.validate_self()
+            if not valid:
+                error_msg = f'{msg} The error looks like it took place in the {field_name} field.'
+                schedule = new_schedule
+                return render(request, 'scheduler/manually_make_schedule.html', {'error_msg': error_msg, 'fields': fields, 'employees': employee_list, 'columns': columns, 'schedule': schedule})
+
+
             new_schedule.save()
-            success_msg = "Schedule successfully made"
+            success_msg = msg
             schedule = Schedule.objects.order_by('-updated')[0]
             return render(request, 'scheduler/manually_make_schedule.html', {'success_msg': success_msg, 'fields': fields, 'employees': employee_list, 'columns': columns, 'schedule': schedule})
 

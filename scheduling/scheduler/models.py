@@ -77,6 +77,21 @@ class Schedule(TimeMixin):
     SaturdayAM = models.TextField(blank=True)
     SaturdayPM = models.TextField(blank=True)
 
+    def validate_self(self):
+        for field in self._meta.fields:
+            shifts = field.value_to_string(self).split('|')
+            names = []
+            positions = []
+            for shift in shifts:
+                if len(shift.split(' ')) > 2:
+                    names.append(shift.split(' ')[0])
+                    positions.append(shift.split(' ')[2])
+            if not len(set(names)) == len(names):
+                return False, 'You scheduled someone for two jobs at the same time!', field.name
+            if not len(set(positions)) == len(positions):
+                return False, 'You scheduled two people for the same position (Driver, Cashier or Bagger)!', field.name
+        return True, 'All looks good! Schedule successfully made.', None
+
     def get_fields(self):
         fields_to_return = []
         for field in self._meta.fields:
