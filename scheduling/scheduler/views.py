@@ -10,7 +10,6 @@ from .utils import sort_positions
 # Create your views here.
 
 
-@login_required
 def home(request):
     emp_names = [p.username for p in Person.objects.filter(
         groups__name__in=['Employee'])]
@@ -32,7 +31,6 @@ def home(request):
     return render(request, 'scheduler/home.html', {'msg': msg})
 
 
-@login_required
 def employees(request):
 
     if not request.user.is_staff:
@@ -46,7 +44,6 @@ def employees(request):
     return render(request, 'scheduler/employees.html', {'employee_list': employee_list})
 
 
-@login_required
 def schedule_schema(request):
 
     # emp_names = [p.username for p in Person.objects.filter(
@@ -178,7 +175,6 @@ def make_schedule(request):
         return render(request, 'scheduler/make_schedule.html', {'formset': formset})
 
 
-@login_required
 def my_schedule(request):
     if Person.objects.filter(username=request.user).exists() and Schedule.objects.exists():
         # Get the most recent schedule and the Person
@@ -196,7 +192,6 @@ def my_schedule(request):
     return render(request, 'scheduler/my_schedule.html')
 
 
-@login_required
 def change_avail(request):
 
     if Person.objects.filter(username=request.user).exists():

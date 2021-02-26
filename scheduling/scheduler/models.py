@@ -78,6 +78,7 @@ class Schedule(TimeMixin):
     SaturdayPM = models.TextField(blank=True)
 
     def validate_self(self):
+        # Returns tuple of a message and field where error occurs (or None)
         for field in self._meta.fields:
             shifts = field.value_to_string(self).split('|')
             names = []
